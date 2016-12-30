@@ -4,6 +4,7 @@ var lastPos = { x: 0, y: 0 } //Ostatnia znana pozycja przykłądu
 var painting = $('.painting')[0]
 var ctx = painting.getContext('2d') //canvas
 
+
 var offests = painting.getBoundingClientRect();
 var offset_left = offests.left
 var offset_top = offests.top
@@ -12,14 +13,19 @@ var offset_top = offests.top
 // Funkcja rysująca graf
 function drawPointsAndLines(pointsList) {
   firstPoint = pointsList[0]
+  ctx.beginPath()
+  ctx.lineWidth = 1;
   ctx.moveTo(firstPoint.x, firstPoint.y)
-  ctx.fillRect(firstPoint.x, firstPoint.y, 3, 3)
+  ctx.fillRect(firstPoint.x, firstPoint.y, 10, 10)
   for (let point of pointsList.slice(1, pointsList.length)) {
+
+    ctx.strokeStyle = 'red'
     ctx.lineTo(point.x, point.y)
     ctx.moveTo(point.x, point.y)
-    ctx.fillRect(point.x, point.y, 3, 3)
+    ctx.fillRect(point.x, point.y, 10, 10)
     ctx.stroke()
   }
+  ctx.closePath()
 }
 
 
@@ -31,6 +37,18 @@ painting.addEventListener('mouseenter', setPosition);
 function setPosition(e) {
   lastPos.x = e.clientX - offset_left;
   lastPos.y = e.clientY - offset_top;
+}
+
+function redrawExamples(){
+  ctx.lineWidth = 5;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#000';
+  ctx.beginPath();
+  for(let example of examples){
+    ctx.moveTo(example.x, example.y);
+    ctx.lineTo(example.x, example.y);
+  }
+  ctx.stroke();
 }
 
 function draw(e) {
@@ -48,10 +66,17 @@ function draw(e) {
 
 
 $('.js-rand').on('click', function () {
-  for (let it = 0; it < $('.js-number-of-points').val(); it += 1) {
+  for (let t = 0; t < $('.js-number-of-points').val(); t += 1) {
     neurons.push(new Point(parseInt(Math.random() * 500), parseInt(Math.random() * 500)))
   }
   drawPointsAndLines(neurons)
+})
+
+$('.js-reset').on('click', function(){
+  examples = [] 
+  neurons = []
+  lastPos = { x: 0, y: 0 }
+  clearCanvas()
 })
 
 function alpha(t, T) {
@@ -59,15 +84,13 @@ function alpha(t, T) {
 }
 
 function clearCanvas() {
-  ctx.clearRect(0, 0, painting.width, painting.height);
+  ctx.clearRect(0, 0, 500, 500);
 }
 
 $('.js-start').on('click', function () {
+
   T = $('.js-t').val()
-  console.log(T)
-  console.log(examples.length)
-  console.log(neurons.length  )
-  for (let it = 0; it <= T; it += 1) {
+  for (let t = 0; t <= T; t += 1) {
 
     currentExample = examples[Math.floor(Math.random() * examples.length)]
     currentDistance = neurons[0].distance(currentExample)
@@ -81,22 +104,18 @@ $('.js-start').on('click', function () {
       if (distanceTmp < currentDistance) {
         [currentDistance, itTmp] = [distanceTmp, itNeuron]
       }
-      for (i = 0; i < 4; i++) {
+      for (i = 0; i < 2; i++) {
         G = 1.0 / (i + 1);
         if (itTmp + i < neurons.length) {
-          neurons[itTmp + i].update(alpha(it, T), G, currentExample);
+          neurons[itTmp + i].update(alpha(t, T), G, currentExample);
         }
         if (itTmp - i >= 0) {
-          neurons[itTmp - i].update(alpha(it, T), G, currentExample);
+          neurons[itTmp - i].update(alpha(t, T), G, currentExample);
         }
       }
-
     }
-
   }
-    clearCanvas()
-    drawPointsAndLines(neurons)
-      console.log(T)
-  console.log(examples.length)
-  console.log(neurons.length  )
+  clearCanvas()
+  drawPointsAndLines(neurons)
+  redrawExamples()
 }) 

@@ -40,9 +40,9 @@ function setPosition(e) {
 }
 
 function redrawExamples(){
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 10;
   ctx.lineCap = 'round';
-  ctx.strokeStyle = '#000';
+  ctx.strokeStyle = 'green';
   ctx.beginPath();
   for(let example of examples){
     ctx.moveTo(example.x, example.y);
@@ -54,19 +54,19 @@ function redrawExamples(){
 function draw(e) {
   if (e.buttons !== 1) return;
   ctx.beginPath();
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 10;
   ctx.lineCap = 'round';
-  ctx.strokeStyle = '#000';
+  ctx.strokeStyle = 'green';
   setPosition(e);
   ctx.moveTo(lastPos.x, lastPos.y);
-  examples.push(new Point(lastPos.x, lastPos.y))
   ctx.lineTo(lastPos.x, lastPos.y);
+  examples.push(new Point(lastPos.x, lastPos.y))
   ctx.stroke();
 }
 
 
 $('.js-rand').on('click', function () {
-  for (let t = 0; t < $('.js-number-of-points').val(); t += 1) {
+  for (let it = 0; it < $('.js-number-of-points').val(); it += 1) {
     neurons.push(new Point(parseInt(Math.random() * 500), parseInt(Math.random() * 500)))
   }
   drawPointsAndLines(neurons)
@@ -88,12 +88,11 @@ function clearCanvas() {
 }
 
 $('.js-start').on('click', function () {
-
   T = $('.js-t').val()
   for (let t = 0; t <= T; t += 1) {
 
     currentExample = examples[Math.floor(Math.random() * examples.length)]
-    currentDistance = neurons[0].distance(currentExample)
+    currentDistance =  neurons[0].distance(currentExample)
     // [itTmp, distanceTmp] = [0, 0]
     itTmp = 0
     distanceTmp = 0
@@ -107,10 +106,10 @@ $('.js-start').on('click', function () {
       for (i = 0; i < 2; i++) {
         G = 1.0 / (i + 1);
         if (itTmp + i < neurons.length) {
-          neurons[itTmp + i].update(alpha(t, T), G, currentExample);
+          neurons[parseInt(itTmp) + i].update(alpha(t, T), G, currentExample);
         }
-        if (itTmp - i >= 0) {
-          neurons[itTmp - i].update(alpha(t, T), G, currentExample);
+        if (parseInt(itTmp) - i >= 0) {
+          neurons[parseInt(itTmp) - i].update(alpha(t, T), G, currentExample);
         }
       }
     }

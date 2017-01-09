@@ -1,18 +1,19 @@
-let examples = [] //Przykłady
-let weights = []
-let lastPos = { x: 0, y: 0 } //Ostatnia znana pozycja przykłądu
-let painting = $('.painting')[0]
-let ctx = painting.getContext('2d') //canvas
+'use strict'
+var examples = [] //Przykłady
+var weights = []
+var lastPos = { x: 0, y: 0 } //Ostatnia znana pozycja przykłady -- rysowanie
+var painting = $('.painting')[0]
+var ctx = painting.getContext('2d') //canvas
 
 
-let offests = painting.getBoundingClientRect();
-let offset_left = offests.left
-let offset_top = offests.top
+var offests = painting.getBoundingClientRect();
+var offset_left = offests.left
+var offset_top = offests.top
 
 
 // Funkcja rysująca graf
 function drawPointsAndLines(pointsList) {
-  firstPoint = pointsList[0]
+  var firstPoint = pointsList[0]
   ctx.beginPath()
   ctx.lineWidth = 1;
   ctx.moveTo(firstPoint.x, firstPoint.y)
@@ -89,10 +90,7 @@ $('.js-t').on('change', function(){
 })
 
 $('.js-reset').on('click', function () {
-  examples = []
-  weights = []
-  lastPos = { x: 0, y: 0 }
-  clearCanvas()
+  window.location = window.location
 })
 
 $('.js-debugger').on('click', function () {
@@ -102,14 +100,13 @@ $('.js-debugger').on('click', function () {
 
 
 $('.js-start').on('click', function () {
-  T = $('.js-t').val()
+  var T = $('.js-t').val()
   for (let t = 0; t <= T; t += 1) {
 
-    currentExample = examples[Math.floor(Math.random() * examples.length)]
-    currentDistance = weights[0].distance(currentExample)
-    // [itTmp, distanceTmp] = [0, 0]
-    itTmp = 0
-    distanceTmp = 0
+    var currentExample = examples[Math.floor(Math.random() * examples.length)]
+    var currentDistance = weights[0].distance(currentExample)
+    var itTmp = 0
+    var distanceTmp = 0
     for (let itWeight of Object.keys(weights)) {
       // debugger
 
@@ -117,13 +114,13 @@ $('.js-start').on('click', function () {
       if (distanceTmp < currentDistance) {
         [currentDistance, itTmp] = [distanceTmp, itWeight]
       }
-      for (let it of [0, 1]) {
-        G = 1.0 / (it + 1);
+      for (let it of [0, 1]) { // 0 - punkt, +1/-1 sąsiedzi
+        let neighbourOrSelf = 1.0 / (it + 1);
         if (itTmp + it < weights.length) {
-          weights[parseInt(itTmp) + it].update(alpha(t, T), G, currentExample);
+          weights[parseInt(itTmp) + it].update(alpha(t, T), neighbourOrSelf, currentExample);
         }
         if (parseInt(itTmp) - it >= 0) {
-          weights[parseInt(itTmp) - it].update(alpha(t, T), G, currentExample);
+          weights[parseInt(itTmp) - it].update(alpha(t, T), neighbourOrSelf, currentExample);
         }
       }
     }
@@ -131,4 +128,4 @@ $('.js-start').on('click', function () {
   clearCanvas()
   drawPointsAndLines(weights)
   redrawExamples()
-}) 
+})

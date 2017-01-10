@@ -114,6 +114,7 @@ $('.js-start').on('click', function () {
       if (distanceTmp < currentDistance) {
         [currentDistance, itTmp] = [distanceTmp, itWeight]
       }
+    }
       for (let it of [0, 1]) { // 0 - punkt, +1/-1 sąsiedzi
         let neighbourOrSelf = 1.0 / (it + 1);
         if (itTmp + it < weights.length) {
@@ -123,7 +124,6 @@ $('.js-start').on('click', function () {
           weights[parseInt(itTmp) - it].update(alpha(t, T), neighbourOrSelf, currentExample);
         }
       }
-    }
   }
   clearCanvas()
   drawPointsAndLines(weights)
